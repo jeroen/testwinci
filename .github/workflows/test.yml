@@ -12,5 +12,5 @@ jobs:
     steps:
       - name: Show $PATH
         run: |
-          docker pull nuest/rocker-win
-          docker run --rm -it nuest/rocker-win Rscript.exe -e "1+1"
+          cd R-3.6.2
+          docker build .
