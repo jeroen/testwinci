@@ -12,4 +12,5 @@ jobs:
     steps:
       - name: Show $PATH
         run: |
-          docker run --rm mcr.microsoft.com/windows/servercore:ltsc2019 powershell.exe -Command 'echo $env:PATH'
+          docker pull nuest/rocker-win
+          docker run --rm -it nuest/rocker-win Rscript.exe -e "1+1"
