@@ -6,4 +6,6 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Pull some image
-        run: docker run microsoft/windowsservercore echo "Hello World!"
+        run: |
+          docker pull microsoft/windowsservercore
+          docker run microsoft/windowsservercore echo "Hello World!"
