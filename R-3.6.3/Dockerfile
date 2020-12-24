@@ -4,7 +4,7 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 
 # "latest" version redirect would be available via https://cloud.r-project.org/bin/windows/base/release.htm
 ENV R_VERSION 3.6.3
-ENV R_INSTALLER_HASH 840714b6dab0a5cb4452b12dc01ca881
+ENV RTOOLS Rtools35
 
 WORKDIR /
 
@@ -12,34 +12,17 @@ WORKDIR /
 RUN Write-Debug [Net.ServicePointManager]::SecurityProtocol ;\
     [Net.ServicePointManager]::SecurityProtocol ;\
     [Net.ServicePointManager]::SecurityProtocol = 'Ssl3', 'Tls12'; \
-    Invoke-WebRequest https://cloud.r-project.org/bin/windows/base/old/$env:R_VERSION/R-$env:R_VERSION-win.exe -OutFile .\R-win.exe
+    Invoke-WebRequest https://cloud.r-project.org/bin/windows/base/old/$env:R_VERSION/R-$env:R_VERSION-win.exe -OutFile .\R-win.exe; \
+    Start-Process .\R-win.exe -ArgumentList '/VERYSILENT /DIR="c:\R"' -Wait ; \
+    Remove-Item .\R-win.exe -Force ; \
+    Invoke-WebRequest https://cran.r-project.org/bin/windows/Rtools/$env:RTOOLS.exe -OutFile .\Rtools-installer.exe; \
+    Start-Process .\Rtools-installer.exe -ArgumentList '/VERYSILENT' -Wait ; \
+    Remove-Item .\Rtools-installer.exe -Force ; \
+    $rPath = 'C:\R\bin;C:\Rtools\bin' ; \
+    $newPath = ('{0};{1}' -f $rPath, $Env:PATH); \
+    setx /M PATH $newPath; \
+    Add-Content c:\R\etc\Rprofile.site 'options(repos = c(CRAN = \"https://cloud.r-project.org/\"))'
 
-RUN if ( (Get-FileHash -Path .\R-win.exe -Algorithm MD5).hash -ne $env:R_INSTALLER_HASH ) { Write-Warning 'hash mismatch for downloaded file, stopping.'; exit 1 }
 
-# For options see https://cloud.r-project.org/bin/windows/base/rw-FAQ.html#How-do-I-check-an-installation_003f
-RUN Start-Process .\R-win.exe -ArgumentList '/VERYSILENT /DIR="c:\R"' -Wait ; \
-    Remove-Item .\R-win.exe -Force
-
-# Add R.exe to PATH
-RUN $rPath = 'C:\R\bin' ; \
-		$newPath = ('{0};{1}' -f $rPath, $Env:PATH); \
-		setx /M PATH $newPath
-
-# Set CRAN mirror
-RUN Add-Content c:\R\etc\Rprofile.site 'options(repos = c(CRAN = \"https://cloud.r-project.org/\"))'
-
-# From https://github.com/StefanScherer/dockerfiles-windows/blob/master/chocolatey/Dockerfile
-ENV chocolateyUseWindowsCompression false
-RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')); \
-    choco feature disable --name showDownloadProgress
-# Install a CLI text editor
-RUN choco install micro -y
-
-# Metadata http://label-schema.org/rc1/
-LABEL maintainer="Daniel Nüst <https://nordholmen.net>" \
-  org.label-schema.url="https://github.com/nuest/rocker-win" \
-  org.label-schema.name="rocker-win" \
-  org.label-schema.description="R in Windows Containers" \
-  org.label-schema.docker.schema-version="rc1"
 
 CMD ["R.exe"]
