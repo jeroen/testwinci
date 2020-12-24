@@ -1,11 +1,15 @@
-name: Test
-on: push
+name: Docker for Windows
+
+on:
+  push: {}
+  workflow_dispatch:
+    inputs: {}
 
 jobs:
-  container-job:
-    runs-on: windows-latest
+  docker:
+    runs-on: windows-2019
+    continue-on-error: true
     steps:
-      - name: Pull some image
+      - name: Show $PATH
         run: |
-          docker pull mcr.microsoft.com/windows/servercore:ltsc2019
-          docker run mcr.microsoft.com/windows/servercore:ltsc2019 echo "Hello World!"
+          docker run --rm mcr.microsoft.com/windows/servercore:ltsc2019 powershell.exe -Command 'echo $env:PATH'
