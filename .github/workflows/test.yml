@@ -7,5 +7,5 @@ jobs:
     steps:
       - name: Pull some image
         run: |
-          docker pull mcr.microsoft.com/windows/servercore:20H2
-          docker run mcr.microsoft.com/windows/servercore:20H2 echo "Hello World!"
+          docker pull mcr.microsoft.com/windows/nanoserver:20H2
+          docker run mcr.microsoft.com/windows/nanoserver:20H2 echo "Hello World!"
