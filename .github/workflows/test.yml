@@ -4,7 +4,6 @@ on: push
 jobs:
   container-job:
     runs-on: windows-latest
-    container: mcr.microsoft.com/windows
     steps:
-      - name: Install R
-        uses: r-lib/actions/setup-r@master
+      - name: Pull some image
+        run: docker run microsoft/windowsservercore echo "Hello World!"
