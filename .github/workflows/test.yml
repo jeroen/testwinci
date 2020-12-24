@@ -7,5 +7,5 @@ jobs:
     steps:
       - name: Pull some image
         run: |
-          docker pull microsoft/windowsservercore
-          docker run microsoft/windowsservercore echo "Hello World!"
+          docker pull mcr.microsoft.com/windows/servercore
+          docker run mcr.microsoft.com/windows/servercore echo "Hello World!"
