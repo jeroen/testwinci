@@ -3,8 +3,8 @@ FROM mcr.microsoft.com/windows/servercore:ltsc2019
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 # "latest" version redirect would be available via https://cloud.r-project.org/bin/windows/base/release.htm
-ENV R_VERSION 3.6.2
-ENV R_INSTALLER_HASH 61274b93935046904727ebfb596e54e2
+ENV R_VERSION 3.6.3
+ENV R_INSTALLER_HASH 840714b6dab0a5cb4452b12dc01ca881
 
 WORKDIR /
 
@@ -12,7 +12,7 @@ WORKDIR /
 RUN Write-Debug [Net.ServicePointManager]::SecurityProtocol ;\
     [Net.ServicePointManager]::SecurityProtocol ;\
     [Net.ServicePointManager]::SecurityProtocol = 'Ssl3', 'Tls12'; \
-    Invoke-WebRequest https://cloud.r-project.org/bin/windows/base/R-$env:R_VERSION-win.exe -OutFile .\R-win.exe
+    Invoke-WebRequest https://cloud.r-project.org/bin/windows/base/old/$env:R_VERSION/R-$env:R_VERSION-win.exe -OutFile .\R-win.exe
 
 RUN if ( (Get-FileHash -Path .\R-win.exe -Algorithm MD5).hash -ne $env:R_INSTALLER_HASH ) { Write-Warning 'hash mismatch for downloaded file, stopping.'; exit 1 }
 
